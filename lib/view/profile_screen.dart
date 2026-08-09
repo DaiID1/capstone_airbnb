@@ -1,3 +1,5 @@
+import 'package:capstone_airbnb/view/login_screen.dart';
+import 'package:capstone_airbnb/Authentication/google_authentication.dart';
 import 'package:provider/provider.dart';
 import 'package:capstone_airbnb/provider/language_provider.dart';
 import 'package:capstone_airbnb/view/settings_screen.dart';
@@ -263,7 +265,14 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.logout,
                     title: lang.t('Log out', 'Đăng xuất'),
                     onTap: () async {
-                      await FirebaseAuth.instance.signOut();
+                      await FirebaseAuthServices().signOut();
+
+                      if (!context.mounted) return;
+
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        (route) => false,
+                      );
                     },
                   ),
                 ],

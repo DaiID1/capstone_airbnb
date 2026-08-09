@@ -42,12 +42,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       final data = doc.data();
 
+      if (!mounted) {
+        return;
+      }
+
       setState(() {
         notificationsEnabled = data?['notificationsEnabled'] ?? true;
         privacyMode = data?['privacyMode'] ?? false;
         isLoading = false;
       });
     } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
       setState(() {
         isLoading = false;
       });
@@ -57,7 +65,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> updateSetting(String key, dynamic value) async {
     final currentUser = user;
 
-    if (currentUser == null) return;
+    if (currentUser == null) {
+      return;
+    }
 
     await FirebaseFirestore.instance
         .collection('users')
@@ -68,7 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         }, SetOptions(merge: true));
   }
 
-  void changeNotifications(bool value) async {
+  Future<void> changeNotifications(bool value) async {
     setState(() {
       notificationsEnabled = value;
     });
@@ -76,7 +86,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await updateSetting('notificationsEnabled', value);
   }
 
-  void changePrivacy(bool value) async {
+  Future<void> changePrivacy(bool value) async {
     setState(() {
       privacyMode = value;
     });
@@ -90,7 +100,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   String get userName {
     final displayName = user?.displayName ?? '';
-    if (displayName.isNotEmpty) return displayName;
+
+    if (displayName.isNotEmpty) {
+      return displayName;
+    }
+
     return user?.email?.split('@').first ?? 'User';
   }
 
@@ -126,33 +140,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 10),
           Container(
             decoration: settingBoxDecoration(),
-            child: Column(
-              children: [
-                RadioListTile<String>(
-                  value: 'English',
-                  groupValue: lang.language,
-                  activeColor: Colors.pinkAccent,
-                  onChanged: (value) {
-                    if (value != null) lang.changeLanguage(value);
-                  },
-                  title: const Text('English'),
-                  secondary: const Icon(Icons.language),
-                ),
-                const Divider(height: 1),
-                RadioListTile<String>(
-                  value: 'Tiếng Việt',
-                  groupValue: lang.language,
-                  activeColor: Colors.pinkAccent,
-                  onChanged: (value) {
-                    if (value != null) lang.changeLanguage(value);
-                  },
-                  title: const Text('Tiếng Việt'),
-                  secondary: const Icon(Icons.translate),
-                ),
-              ],
+            child: RadioGroup<String>(
+              groupValue: lang.language,
+              onChanged: (value) {
+                if (value != null) {
+                  lang.changeLanguage(value);
+                }
+              },
+              child: Column(
+                children: [
+                  RadioListTile<String>(
+                    value: 'English',
+                    fillColor: WidgetStateProperty.all(Colors.pinkAccent),
+                    title: const Text('English'),
+                    secondary: const Icon(Icons.language),
+                  ),
+                  const Divider(height: 1),
+                  RadioListTile<String>(
+                    value: 'Tiếng Việt',
+                    fillColor: WidgetStateProperty.all(Colors.pinkAccent),
+                    title: const Text('Tiếng Việt'),
+                    secondary: const Icon(Icons.translate),
+                  ),
+                ],
+              ),
             ),
           ),
-
           const SizedBox(height: 28),
           Text(
             lang.t('Account', 'Tài khoản'),
@@ -192,7 +205,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-
           const SizedBox(height: 28),
           Text(
             lang.t('Privacy', 'Quyền riêng tư'),
@@ -203,13 +215,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             decoration: settingBoxDecoration(),
             child: SwitchListTile(
               value: privacyMode,
-              activeColor: Colors.pinkAccent,
+              activeThumbColor: Colors.pinkAccent,
               onChanged: changePrivacy,
               secondary: const Icon(Icons.lock_outline),
               title: Text(lang.t('Private profile', 'Hồ sơ riêng tư')),
             ),
           ),
-
           const SizedBox(height: 28),
           Text(
             lang.t('Notifications', 'Thông báo'),
@@ -220,7 +231,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             decoration: settingBoxDecoration(),
             child: SwitchListTile(
               value: notificationsEnabled,
-              activeColor: Colors.pinkAccent,
+              activeThumbColor: Colors.pinkAccent,
               onChanged: changeNotifications,
               secondary: const Icon(Icons.notifications_outlined),
               title: Text(lang.t('Push notifications', 'Thông báo đẩy')),

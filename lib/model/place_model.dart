@@ -76,7 +76,8 @@ final List<Place> listOfPlaces = [
   Place(
     isActive: true,
     title: "Căn hộ view biển Mỹ Khê",
-    image: "https://picsum.photos/id/1018/1000/700",
+    image:
+        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/320552632.jpg?k=899a45f007c34bc015a4321832994792dcf7fb6d6ed4d43f1fdc0232584256f1&o=",
     rating: 4.88,
     review: 214,
     bedAndBathroom: "2 beds · 2 bathrooms",
@@ -90,19 +91,20 @@ final List<Place> listOfPlaces = [
     latitude: 16.0544,
     longitude: 108.2022,
     imageUrl: [
-      "https://picsum.photos/id/1018/1000/700",
-      "https://picsum.photos/id/1025/1000/700",
-      "https://picsum.photos/id/1067/1000/700",
+      "https://cf.bstatic.com/xdata/images/hotel/max1024x768/320552632.jpg?k=899a45f007c34bc015a4321832994792dcf7fb6d6ed4d43f1fdc0232584256f1&o=",
+      "https://cf.bstatic.com/xdata/images/hotel/max500/901180686.jpg?k=7c69e2a8eeac5e1a9a1f55c3864aa6af7cac59141c55f45489a0233c3254ee68&o=",
+      "https://cf.bstatic.com/xdata/images/hotel/max500/320552630.jpg?k=f44881a64f18cf993c7043de02a88df802e66b457ecb6b8534b5f9db4b62b066&o=",
     ],
   ),
 
   Place(
     isActive: true,
-    title: "Studio gần cầu Rồng",
-    image: "https://picsum.photos/id/1043/1000/700",
+    title: "Hotel",
+    image:
+        "https://cf.bstatic.com/xdata/images/hotel/max500/460405082.jpg?k=007ba8488967e0f44e4be0168b8428941b30a82b57ab1984a8bebb92d88b1218&o=",
     rating: 4.76,
     review: 138,
-    bedAndBathroom: "1 bed · 1 bathroom",
+    bedAndBathroom: "2 bed · 1 bathroom",
     date: "2026-08-22",
     price: 48,
     address: "Hải Châu, Đà Nẵng, Việt Nam",
@@ -113,16 +115,17 @@ final List<Place> listOfPlaces = [
     latitude: 16.0678,
     longitude: 108.2208,
     imageUrl: [
-      "https://picsum.photos/id/1043/1000/700",
-      "https://picsum.photos/id/1044/1000/700",
-      "https://picsum.photos/id/1045/1000/700",
+      "https://cf.bstatic.com/xdata/images/hotel/max500/460405082.jpg?k=007ba8488967e0f44e4be0168b8428941b30a82b57ab1984a8bebb92d88b1218&o=",
+      "https://cf.bstatic.com/xdata/images/hotel/max300/460405875.jpg?k=3c24825d31b7729fcf13209c84b48b4bcd746d7b4d821068cb6b2c4c1c2e7cb4&o=",
+      "https://cf.bstatic.com/xdata/images/hotel/max1024x768/460405115.jpg?k=9a10c34f32eeb5167d4dea49851a1dadfe10940632463f10288836ea47eed5ab&o=",
     ],
   ),
 
   Place(
     isActive: true,
-    title: "Nhà cổ yên tĩnh gần phố Hội",
-    image: "https://picsum.photos/id/1036/1000/700",
+    title: "NA Hoian Hotel",
+    image:
+        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/814090334.jpg?k=31cf7a6b212adb74861d3441642ef532e122942415e3f24785a09f56a63457a0&o=",
     rating: 4.91,
     review: 302,
     bedAndBathroom: "2 beds · 1 bathroom",
@@ -136,9 +139,9 @@ final List<Place> listOfPlaces = [
     latitude: 15.8801,
     longitude: 108.3380,
     imageUrl: [
-      "https://picsum.photos/id/1036/1000/700",
-      "https://picsum.photos/id/1037/1000/700",
-      "https://picsum.photos/id/1038/1000/700",
+      "https://cf.bstatic.com/xdata/images/hotel/max1024x768/814090334.jpg?k=31cf7a6b212adb74861d3441642ef532e122942415e3f24785a09f56a63457a0&o=",
+      "https://cf.bstatic.com/xdata/images/hotel/max500/806395472.jpg?k=b00cd67d4c45e8f2aeaeee1015ac75ba911ed059a21690ab1a1fd7156cb349ba&o=",
+      "https://cf.bstatic.com/xdata/images/hotel/max300/806390086.jpg?k=e62215ec62d0ac49622761bf313533dc74780f82b1c28ce14060a074e879eea8&o=",
     ],
   ),
 

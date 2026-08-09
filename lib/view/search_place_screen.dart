@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:capstone_airbnb/view/search_result_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:capstone_airbnb/provider/language_provider.dart';
 
 class SearchPlaceScreen extends StatefulWidget {
   const SearchPlaceScreen({super.key});
@@ -12,15 +14,16 @@ class _SearchPlaceScreenState extends State<SearchPlaceScreen> {
   final TextEditingController searchController = TextEditingController();
 
   final List<String> places = [
-    'Bali, Indonesia',
-    'Italy',
-    'Amalfi Coast, Italy',
-    'Florence, Italy',
-    'Lake Como, Italy',
-    'Milan, Italy',
-    'Tokyo, Japan',
-    'Paris, France',
-    'London, England',
+    'Đà Nẵng, Việt Nam',
+    'Hà Nội, Việt Nam',
+    'TP. Hồ Chí Minh, Việt Nam',
+    'Đà Lạt, Lâm Đồng',
+    'Nha Trang, Khánh Hòa',
+    'Phú Quốc, Kiên Giang',
+    'Hội An, Quảng Nam',
+    'Huế, Thừa Thiên Huế',
+    'Sa Pa, Lào Cai',
+    'Vũng Tàu, Bà Rịa - Vũng Tàu',
   ];
 
   String searchText = '';
@@ -48,6 +51,8 @@ class _SearchPlaceScreenState extends State<SearchPlaceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final lang = Provider.of<LanguageProvider>(context);
+
     final List<String> filteredPlaces = places.where((place) {
       return place.toLowerCase().contains(searchText.toLowerCase());
     }).toList();
@@ -77,11 +82,11 @@ class _SearchPlaceScreenState extends State<SearchPlaceScreen> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  const Expanded(
+                  Expanded(
                     child: Center(
                       child: Text(
-                        'Stays',
-                        style: TextStyle(
+                        lang.t('Stays', 'Nơi ở'),
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
@@ -112,7 +117,7 @@ class _SearchPlaceScreenState extends State<SearchPlaceScreen> {
                   onSubmitted: goToResultScreen,
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: 'Search destination',
+                    hintText: lang.t('Search destination', 'Tìm điểm đến'),
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: searchText.isNotEmpty
                         ? IconButton(
@@ -132,10 +137,13 @@ class _SearchPlaceScreenState extends State<SearchPlaceScreen> {
             const SizedBox(height: 20),
             Expanded(
               child: filteredPlaces.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        'No places found',
-                        style: TextStyle(color: Colors.black45, fontSize: 16),
+                        lang.t('No places found', 'Không tìm thấy địa điểm'),
+                        style: const TextStyle(
+                          color: Colors.black45,
+                          fontSize: 16,
+                        ),
                       ),
                     )
                   : ListView.builder(

@@ -1,4 +1,6 @@
+import 'package:capstone_airbnb/Authentication/email_authentication.dart';
 import 'package:capstone_airbnb/Authentication/google_authentication.dart';
+import 'package:capstone_airbnb/Components/login/social_login_button.dart';
 import 'package:capstone_airbnb/provider/language_provider.dart';
 import 'package:capstone_airbnb/view/main_screen.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,75 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  void goToMainScreen() {
+    if (!mounted) return;
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const AppMainScreen()),
+      (route) => false,
+    );
+  }
+
+  void showComingSoon(String featureName, LanguageProvider lang) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          lang.isVietnamese
+              ? '$featureName chưa được hỗ trợ trong bản demo'
+              : '$featureName is not available in this demo',
+        ),
+      ),
+    );
+  }
+
+  void showHelpDialog(LanguageProvider lang) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(lang.t('Need help?', 'Bạn cần trợ giúp?')),
+          content: Text(
+            lang.t(
+              'You can login with Google or Email. Phone, Facebook and Apple login are not available in this demo.',
+              'Bạn có thể đăng nhập bằng Google hoặc Email. Đăng nhập bằng số điện thoại, Facebook và Apple chưa được hỗ trợ trong bản demo.',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> loginWithEmail(LanguageProvider lang) async {
+    final bool success = await EmailAuthentication.showEmailLoginDialog(
+      context: context,
+      lang: lang,
+    );
+
+    if (success && mounted) {
+      goToMainScreen();
+    }
+  }
+
+  Future<void> loginWithGoogle() async {
+    final userCredential = await FirebaseAuthServices().signInWithGoogle();
+
+    if (userCredential == null) {
+      return;
+    }
+
+    if (!mounted) return;
+
+    goToMainScreen();
+  }
+
   @override
   Widget build(BuildContext context) {
     final lang = Provider.of<LanguageProvider>(context);
@@ -48,46 +119,37 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: size.height * 0.02),
-                    phoneNumberField(size, lang),
-                    const SizedBox(height: 10),
-                    RichText(
-                      text: TextSpan(
-                        text: lang.t(
-                          'We will call or text you to confirm your number. Standard message and data rates apply.',
-                          'Chúng tôi sẽ gọi hoặc nhắn tin để xác nhận số điện thoại của bạn. Phí tin nhắn và dữ liệu tiêu chuẩn có thể được áp dụng.',
-                        ),
-                        style: const TextStyle(
-                          color: Colors.black45,
-                          fontSize: 15,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: lang.t(' Privacy Policy', ' Chính sách quyền riêng tư'),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.underline,
-                              color: Colors.blue,
-                            ),
-                          ),
-                        ],
+                    SizedBox(height: size.height * 0.03),
+                    Text(
+                      lang.t(
+                        'Continue with your Google account or email address to use the app.',
+                        'Tiếp tục bằng tài khoản Google hoặc địa chỉ Email để sử dụng ứng dụng.',
+                      ),
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 15,
                       ),
                     ),
                     SizedBox(height: size.height * 0.03),
-                    Container(
-                      width: size.width,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.pink,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: Text(
-                          lang.t('Continue', 'Tiếp tục'),
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    GestureDetector(
+                      onTap: () {
+                        loginWithEmail(lang);
+                      },
+                      child: Container(
+                        width: size.width,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.pink,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
+                            lang.t('Continue with Email', 'Tiếp tục với Email'),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -111,53 +173,75 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     SizedBox(height: size.height * 0.026),
-                    socialIcons(
-                      size,
-                      FontAwesomeIcons.facebook,
-                      lang.t('Continue with Facebook', 'Tiếp tục với Facebook'),
-                      Colors.blue,
-                      30,
+                    SocialLoginButton(
+                      size: size,
+                      icon: FontAwesomeIcons.google,
+                      label: lang.t(
+                        'Continue with Google',
+                        'Tiếp tục với Google',
+                      ),
+                      iconColor: Colors.pink,
+                      iconSize: 27,
+                      onTap: loginWithGoogle,
                     ),
-                    InkWell(
-                      onTap: () async {
-                        await FirebaseAuthServices().signInWithGoogle();
-                        if (!mounted) return;
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AppMainScreen(),
-                          ),
+                    SocialLoginButton(
+                      size: size,
+                      icon: FontAwesomeIcons.envelope,
+                      label: lang.t(
+                        'Continue with Email',
+                        'Tiếp tục với Email',
+                      ),
+                      iconColor: Colors.black,
+                      iconSize: 30,
+                      onTap: () {
+                        loginWithEmail(lang);
+                      },
+                    ),
+                    SocialLoginButton(
+                      size: size,
+                      icon: FontAwesomeIcons.facebook,
+                      label: lang.t(
+                        'Continue with Facebook',
+                        'Tiếp tục với Facebook',
+                      ),
+                      iconColor: Colors.blue,
+                      iconSize: 30,
+                      onTap: () {
+                        showComingSoon(
+                          lang.t('Facebook login', 'Đăng nhập bằng Facebook'),
+                          lang,
                         );
                       },
-                      child: socialIcons(
-                        size,
-                        FontAwesomeIcons.google,
-                        lang.t('Continue with Google', 'Tiếp tục với Google'),
-                        Colors.pink,
-                        27,
+                    ),
+                    SocialLoginButton(
+                      size: size,
+                      icon: FontAwesomeIcons.apple,
+                      label: lang.t(
+                        'Continue with Apple',
+                        'Tiếp tục với Apple',
                       ),
-                    ),
-                    socialIcons(
-                      size,
-                      FontAwesomeIcons.apple,
-                      lang.t('Continue with Apple', 'Tiếp tục với Apple'),
-                      Colors.black,
-                      30,
-                    ),
-                    socialIcons(
-                      size,
-                      FontAwesomeIcons.envelope,
-                      lang.t('Continue with Email', 'Tiếp tục với Email'),
-                      Colors.black,
-                      30,
+                      iconColor: Colors.black,
+                      iconSize: 30,
+                      onTap: () {
+                        showComingSoon(
+                          lang.t('Apple login', 'Đăng nhập bằng Apple'),
+                          lang,
+                        );
+                      },
                     ),
                     const SizedBox(height: 10),
                     Center(
-                      child: Text(
-                        lang.t('Need help?', 'Bạn cần trợ giúp?'),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17,
+                      child: GestureDetector(
+                        onTap: () {
+                          showHelpDialog(lang);
+                        },
+                        child: Text(
+                          lang.t('Need help?', 'Bạn cần trợ giúp?'),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
                       ),
                     ),
@@ -167,95 +251,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Padding socialIcons(
-    Size size,
-    FaIconData icon,
-    String name,
-    Color color,
-    double iconSize,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
-      child: Container(
-        width: size.width,
-        padding: const EdgeInsets.symmetric(vertical: 11),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(),
-        ),
-        child: Row(
-          children: [
-            SizedBox(width: size.width * 0.05),
-            FaIcon(icon, color: color, size: iconSize),
-            SizedBox(width: size.width * 0.12),
-            Expanded(
-              child: Text(
-                name,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Container phoneNumberField(Size size, LanguageProvider lang) {
-    return Container(
-      width: size.width,
-      height: 130,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black45),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10, left: 10, top: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  lang.t('Country/Region', 'Quốc gia/Khu vực'),
-                  style: const TextStyle(color: Colors.black45),
-                ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Vietnam(+84)',
-                      style: TextStyle(color: Colors.black, fontSize: 20),
-                    ),
-                    Icon(Icons.keyboard_arrow_down_sharp, size: 30),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: lang.t('Phone number', 'Số điện thoại'),
-                hintStyle: const TextStyle(
-                  fontSize: 18,
-                  color: Colors.black45,
-                ),
-                border: InputBorder.none,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -8,28 +8,41 @@ class MyBookingScreen extends StatelessWidget {
 
   String getImage(Map<String, dynamic> data) {
     final dynamic roomImages = data['roomImages'];
-    if (roomImages is List && roomImages.isNotEmpty)
+
+    if (roomImages is List && roomImages.isNotEmpty) {
       return roomImages.first.toString();
-    if (data['roomImage'] != null && data['roomImage'].toString().isNotEmpty)
+    }
+
+    if (data['roomImage'] != null && data['roomImage'].toString().isNotEmpty) {
       return data['roomImage'].toString();
+    }
+
     return '';
   }
 
   Future<void> cancelBooking(BuildContext context, String docId) async {
     final lang = Provider.of<LanguageProvider>(context, listen: false);
+
     try {
       await FirebaseFirestore.instance.collection('booking').doc(docId).update({
         'status': 'cancelled',
         'cancelledAt': FieldValue.serverTimestamp(),
       });
-      if (!context.mounted) return;
+
+      if (!context.mounted) {
+        return;
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(lang.t('Booking cancelled', 'Đã hủy đặt phòng')),
         ),
       );
     } catch (e) {
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        return;
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${lang.t('Cancel failed', 'Hủy thất bại')}: $e'),
@@ -58,13 +71,17 @@ class MyBookingScreen extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: bookingCollection.snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          if (snapshot.hasError)
+          }
+
+          if (snapshot.hasError) {
             return Center(
               child: Text('${lang.t('Error', 'Lỗi')}: ${snapshot.error}'),
             );
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty)
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(
               child: Text(
                 lang.t('No trips yet', 'Chưa có chuyến đi'),
@@ -74,6 +91,7 @@ class MyBookingScreen extends StatelessWidget {
                 ),
               ),
             );
+          }
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -122,15 +140,17 @@ class MyBookingScreen extends StatelessWidget {
                               height: 190,
                               width: double.infinity,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
-                                height: 190,
-                                width: double.infinity,
-                                color: Colors.grey.shade200,
-                                child: const Icon(
-                                  Icons.image_not_supported_outlined,
-                                  size: 48,
-                                ),
-                              ),
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  height: 190,
+                                  width: double.infinity,
+                                  color: Colors.grey.shade200,
+                                  child: const Icon(
+                                    Icons.image_not_supported_outlined,
+                                    size: 48,
+                                  ),
+                                );
+                              },
                             ),
                     ),
                     Padding(
@@ -222,8 +242,9 @@ class MyBookingScreen extends StatelessWidget {
                             SizedBox(
                               width: double.infinity,
                               child: OutlinedButton(
-                                onPressed: () =>
-                                    cancelBooking(context, booking.id),
+                                onPressed: () {
+                                  cancelBooking(context, booking.id);
+                                },
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Colors.red,
                                   side: const BorderSide(color: Colors.red),

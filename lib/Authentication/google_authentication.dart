@@ -1,25 +1,39 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthServices {
-  final auth = FirebaseAuth.instance;
-  final googleSignIn = GoogleSignIn();
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
-  signInWithGoogle() async {
+  Future<UserCredential?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleSignInAccount = await googleSignIn
-          .signIn();
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
-        final AuthCredential authCredential = GoogleAuthProvider.credential(
-          accessToken: googleSignInAuthentication.accessToken,
-          idToken: googleSignInAuthentication.idToken,
-        );
-        await auth.signInWithCredential(authCredential);
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      if (googleUser == null) {
+        return null;
       }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      return await auth.signInWithCredential(credential);
     } on FirebaseAuthException catch (e) {
-      print(e.toString());
+      debugPrint('FirebaseAuthException: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint('Google sign in error: $e');
+      return null;
     }
+  }
+
+  Future<void> signOut() async {
+    await googleSignIn.signOut();
+    await auth.signOut();
   }
 }
